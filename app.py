@@ -182,5 +182,25 @@ def set_status(id):
 
 @app.cli.command("init-db")
 def init_db(): db.create_all(); print("Database initialized.")
+# Initialize DB tables on startup
+with app.app_context():
+    db.create_all()
 
-with app.app_context(): db.create_all()
+    # --- Force ADMIN_EMAIL as admin every deploy ---
+    try:
+        admin_email = os.getenv("ADMIN_EMAIL")
+        if admin_email:
+            u = User.query.filter_by(email=admin_email.lower().strip()).first()
+            if u:
+                if not u.is_admin:
+                    u.is_admin = True
+                    db.session.commit()
+                    print(f"✅ Admin olarak yükseltildi: {u.email}")
+                else:
+                    print(f"ℹ️ Zaten admin: {u.email}")
+            else:
+                print(f"⚠️ ADMIN_EMAIL için kullanıcı yok: {admin_email}")
+        else:
+            print("⚠️ ADMIN_EMAIL env tanımlı değil.")
+    except Exception as e:
+        print("⚠️ Admin bootstrap hatası:", e)
