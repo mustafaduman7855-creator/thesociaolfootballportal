@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-2xl font-semibold mb-6">Bildirim Paneli</h2>
+<div class="grid md:grid-cols-2 gap-8">
+  <form method="POST" class="space-y-4 bg-emerald-900/20 border border-emerald-700/40 rounded-2xl p-6">
+    <h3 class="text-xl font-semibold mb-2">Yeni Bildirim</h3>
+    <p class="text-sm opacity-80 mb-4">Maç kayıtlarının hangi saat aralığının yayınlanmasını istediğinizi seçin.</p>
+    {{ form.hidden_tag() }}
+    <div class="grid sm:grid-cols-3 gap-4">
+      <div class="sm:col-span-3">{{ form.match_date.label(class="block text-sm mb-1") }}{{ form.match_date(class="w-full p-2 rounded-lg bg-emerald-950/40 border border-emerald-700/40", placeholder="YYYY-AA-GG") }}</div>
+      <div>{{ form.start_time.label(class="block text-sm mb-1") }}{{ form.start_time(class="w-full p-2 rounded-lg bg-emerald-950/40 border border-emerald-700/40", placeholder="SS:DD") }}</div>
+      <div>{{ form.end_time.label(class="block text-sm mb-1") }}{{ form.end_time(class="w-full p-2 rounded-lg bg-emerald-950/40 border border-emerald-700/40", placeholder="SS:DD") }}</div>
+      <div class="sm:col-span-3">{{ form.video_link.label(class="block text-sm mb-1") }}{{ form.video_link(class="w-full p-2 rounded-lg bg-emerald-950/40 border border-emerald-700/40", placeholder="Örn: Google Drive/YouTube/Vimeo linki") }}</div>
+      <div class="sm:col-span-3">{{ form.notes.label(class="block text-sm mb-1") }}{{ form.notes(class="w-full p-2 rounded-lg bg-emerald-950/40 border border-emerald-700/40", rows="3", placeholder="Takım isimleri, saha, özel notlar...") }}</div>
+      <div class="sm:col-span-3 flex items-start gap-2">
+        {{ form.consent_confirmed(class="mt-1") }}
+        <label class="text-sm opacity-90" for="consent_confirmed">Oyunculardan internet sitesinde yayın için onay aldığımı beyan ederim. Bu kutucuk işaretlenmeden bildirim gönderilemez.</label>
+      </div>
+    </div>
+    <div>{{ form.submit(class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl") }}</div>
+  </form>
+
+  <div>
+    <h3 class="text-xl font-semibold mb-3">Bildirimlerim</h3>
+    <div class="space-y-4">
+      {% for s in my_submissions %}
+      <div class="rounded-xl border border-emerald-700/40 bg-emerald-900/20 p-4">
+        <div class="flex items-center justify-between">
+          <div class="font-medium">{{ s.match_date.strftime('%d %B %Y') }} — {{ s.start_time.strftime('%H:%M') }}–{{ s.end_time.strftime('%H:%M') }}</div>
+          <div class="text-sm">
+            {% if s.status == 'approved' %}<span class="px-2 py-1 rounded-lg bg-emerald-700/60 border border-emerald-500/40">Onaylandı</span>
+            {% elif s.status == 'rejected' %}<span class="px-2 py-1 rounded-lg bg-red-700/60 border border-red-500/40">Reddedildi</span>
+            {% else %}<span class="px-2 py-1 rounded-lg bg-yellow-700/60 border border-yellow-500/40">Beklemede</span>{% endif %}
+          </div>
+        </div>
+        {% if s.video_link %}<div class="text-sm mt-1 opacity-80">Video: <a class="underline" href="{{ s.video_link }}" target="_blank" rel="noopener">Bağlantı</a></div>{% endif %}
+        {% if s.notes %}<div class="text-sm mt-1 opacity-80">Not: {{ s.notes }}</div>{% endif %}
+        <div class="text-xs opacity-70 mt-2">Oluşturulma: {{ s.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+      </div>
+      {% else %}<div class="text-emerald-100/70">Henüz bir bildiriminiz yok.</div>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
