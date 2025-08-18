@@ -11,7 +11,12 @@ from wtforms import (StringField, PasswordField, SubmitField, BooleanField,
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 
 def normalize_db_url(url: str) -> str:
-    return url.replace("postgres://", "postgresql://", 1) if url.startswith("postgres://") else url
+    # Render bazen postgres:// veriyor; SQLAlchemy + psycopg3 için driver adı postgresql+psycopg
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql+psycopg://", 1)
+    elif url.startswith("postgresql://"):
+        url = url.replace("postgresql://", "postgresql+psycopg://", 1)
+    return url
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret-key-change-me")
