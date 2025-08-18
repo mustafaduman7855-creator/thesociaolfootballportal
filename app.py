@@ -18,6 +18,16 @@ def normalize_db_url(url: str) -> str:
     return url
 
 app = Flask(__name__)
+from werkzeug.security import generate_password_hash
+
+with app.app_context():
+    from app import db, User  # eğer User modelin aynı dosyadaysa sadece "from app import db, User" yazmana gerek yok
+    user = User.query.filter_by(email="mustafaduman7855@gmail.com").first()
+    if user and not user.is_admin:
+        user.is_admin = True
+        db.session.commit()
+        print("✅ Kullanıcı admin yapıldı:", user.email)
+
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret-key-change-me")
 db_url = os.getenv("DATABASE_URL", "sqlite:///app.db")
 app.config["SQLALCHEMY_DATABASE_URI"] = normalize_db_url(db_url)
