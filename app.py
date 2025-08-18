@@ -11,7 +11,6 @@ from wtforms import (StringField, PasswordField, SubmitField, BooleanField,
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 
 def normalize_db_url(url: str) -> str:
-    # Render bazen postgres:// veriyor; SQLAlchemy + psycopg3 için driver adı postgresql+psycopg
     if url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql+psycopg://", 1)
     elif url.startswith("postgresql://"):
