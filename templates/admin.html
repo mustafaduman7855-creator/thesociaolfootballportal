@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-2xl font-semibold mb-6">Admin Paneli</h2>
+<form method="GET" class="mb-4">
+  <input name="q" value="{{ request.args.get('q','') }}" placeholder="Tesis adı / kullanıcı / e-posta ile ara"
+         class="w-full md:w-96 p-2 rounded-lg bg-emerald-950/40 border border-emerald-700/40">
+</form>
+<div class="space-y-4">
+  {% for s in submissions %}
+  <div class="rounded-xl border border-emerald-700/40 bg-emerald-900/20 p-4">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+      <div>
+        <div class="font-medium">{{ s.match_date.strftime('%d %B %Y') }} — {{ s.start_time.strftime('%H:%M') }}–{{ s.end_time.strftime('%H:%M') }}</div>
+        <div class="text-sm opacity-80">{{ s.user.facility_name or "Tesis adı yok" }} — {{ s.user.name }} (<a class="underline" href="mailto:{{ s.user.email }}">{{ s.user.email }}</a>)</div>
+        {% if s.video_link %}<div class="text-sm mt-1 opacity-80">Video: <a class="underline" href="{{ s.video_link }}" target="_blank" rel="noopener">Bağlantı</a></div>{% endif %}
+        {% if s.notes %}<div class="text-sm mt-1 opacity-80">Not: {{ s.notes }}</div>{% endif %}
+        <div class="text-xs opacity-70 mt-2">Oluşturulma: {{ s.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+      </div>
+      <form method="POST" action="{{ url_for('set_status', submission_id=s.id) }}" class="flex items-center gap-2">
+        <select name="status" class="p-2 rounded-lg bg-emerald-950/40 border border-emerald-700/40">
+          <option value="pending" {% if s.status=='pending' %}selected{% endif %}>Beklemede</option>
+          <option value="approved" {% if s.status=='approved' %}selected{% endif %}>Onaylandı</option>
+          <option value="rejected" {% if s.status=='rejected' %}selected{% endif %}>Reddedildi</option>
+        </select>
+        <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl" type="submit">Kaydet</button>
+      </form>
+    </div>
+  </div>
+  {% else %}<div class="text-emerald-100/70">Henüz bildirim yok.</div>{% endfor %}
+</div>
+{% endblock %}
