@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TheSocialFootball | Halı Saha Sahip Portalı</title>
+  <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="theme-color" content="#0f3b35">
+  <style>.fade-in{animation:fadeIn .4s ease-in-out}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}</style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-gray-900 via-emerald-900 to-gray-900 text-emerald-50">
+  <nav class="bg-emerald-900/60 backdrop-blur border-b border-emerald-700/30">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="logo" class="w-10 h-10 rounded-md ring-1 ring-emerald-700/50">
+        <a href="{{ url_for('index') }}" class="text-xl font-semibold">TheSocialFootball</a>
+      </div>
+      <div class="flex items-center gap-4">
+        {% if current_user.is_authenticated %}
+          <a class="hover:underline" href="{{ url_for('dashboard') }}">Panel</a>
+          {% if current_user.is_admin %}<a class="hover:underline" href="{{ url_for('admin') }}">Admin</a>{% endif %}
+          <a class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg" href="{{ url_for('logout') }}">Çıkış</a>
+        {% else %}
+          <a class="hover:underline" href="{{ url_for('login') }}">Giriş</a>
+          <a class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg" href="{{ url_for('register') }}">Kayıt Ol</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="space-y-3 mb-6 fade-in">
+          {% for category, message in messages %}
+            <div class="rounded-xl px-4 py-3 text-sm border
+                        {% if category == 'success' %} bg-emerald-900/40 border-emerald-600/40 {% elif category == 'danger' %} bg-red-900/30 border-red-600/40 {% elif category == 'info' %} bg-sky-900/30 border-sky-600/40 {% else %} bg-gray-800/40 border-gray-600/40 {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="border-t border-emerald-700/30 py-8 mt-8">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-sm opacity-80">
+      <div>&copy; {{ 2025 }} TheSocialFootball. Tüm hakları saklıdır.</div>
+      <div>İletişim: <a class="underline" href="mailto:mustafaduman7855@gmail.com">mustafaduman7855@gmail.com</a></div>
+    </div>
+  </footer>
+</body>
+</html>
