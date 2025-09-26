@@ -21,8 +21,8 @@ app = Flask(__name__)
 from werkzeug.security import generate_password_hash
 
 with app.app_context():
-    from app import db, User  # eğer User modelin aynı dosyadaysa sadece "from app import db, User" yazmana gerek yok
-    user = User.query.filter_by(email="mustafaduman7855@gmail.com").first()
+    from app import db, user
+    user = user.User.query.filter_by(email="mustafaduman7855@gmail.com").first()
     if user and not user.is_admin:
         user.is_admin = True
         db.session.commit()
@@ -188,7 +188,7 @@ with app.app_context():
 
     # --- Force ADMIN_EMAIL as admin every deploy ---
     try:
-        admin_email = os.getenv("ADMIN_EMAIL")
+        admin_email = os.getenv("musyafad@hotmail.com")
         if admin_email:
             u = User.query.filter_by(email=admin_email.lower().strip()).first()
             if u:
